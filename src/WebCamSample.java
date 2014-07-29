@@ -78,6 +78,11 @@ public class WebCamSample extends JPanel
    /** Animates display */
    protected Timer animator;
    
+   /** List for previous frames **/
+   protected ArrayList<TopCode> topCodes;
+   
+   /** number of frames to use for average**/
+   protected int frame_average;
    
    public WebCamSample() {
       super(true);
@@ -85,7 +90,8 @@ public class WebCamSample extends JPanel
       this.webcam   = new WebCam();
       this.scanner  = new Scanner();
       this.animator = new Timer(100, this);  // 10 frames / second
-
+      this.topCodes = new ArrayList<TopCode>(3);
+      this.frame_average = 7;      
       
       //--------------------------------------------------
       // Set up the application frame
@@ -154,19 +160,13 @@ public class WebCamSample extends JPanel
          g.drawImage(image, 0, 0, null);
       }
 
-      if (codes != null) {
-         for (TopCode top : codes) {
-
-            // Draw the topcode in place
-            top.draw(g);
-            int id = top.getCode();
-            float orientation = top.getOrientation();
-            float x = top.getCenterX();
-            float y = top.getCenterY();
-            //float z = top.getHeightZ();
-            System.out.println("id: " + id + " orientation: " + orientation + " pos: " + x + ", " + y);
-            
-         }
+      if (codes != null && codes.size() > 0) {
+    	  for(TopCode top: codes){
+    		  int z = (int) (250.825 * 100 / top.getDiameter());
+    		  top.draw(g);
+    		  System.out.println(top.getCenterX() + " " + top.getCenterY() + " " + z);
+    		  
+    	  }
       }
    }
 
