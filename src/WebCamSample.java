@@ -38,6 +38,8 @@ import java.awt.image.BufferedImage;
 import java.awt.event.*;
 
 import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JPanel;
 
 import java.util.Queue;
 
@@ -78,6 +80,11 @@ public class WebCamSample extends JPanel
    /** Animates display */
    protected Timer animator;
    
+   /** Panel */
+   JPanel pnlButton = new JPanel();
+   
+   /** Button */
+   JButton btnSetOrientation = new JButton("Set Orientation");
    
    public WebCamSample() {
       super(true);
@@ -85,7 +92,6 @@ public class WebCamSample extends JPanel
       this.webcam   = new WebCam();
       this.scanner  = new Scanner();
       this.animator = new Timer(100, this);  // 10 frames / second
-
       
       //--------------------------------------------------
       // Set up the application frame
@@ -97,6 +103,24 @@ public class WebCamSample extends JPanel
       frame.addWindowListener(this);
       frame.pack();
       frame.setVisible(true);
+      	btnSetOrientation.setBounds(60, 400, 220, 30);
+      	pnlButton.setBounds(800, 800, 200, 100);
+      	pnlButton.add(btnSetOrientation);
+      	add(pnlButton);
+      	btnSetOrientation.setBorderPainted(false);
+      	btnSetOrientation.setOpaque(false);
+      frame.setTitle("TOPCode Viewer");
+  
+      /**This code segment will open an infinite amount of java applications running video
+      Do not uncomment out these lines.*/
+    // WebCamSample WinSize = new WebCamSample();
+    //  WinSize.setSize(700, 520);
+    //  frame.getContentPane().add(WinSize);
+    //  frame.pack();
+    //  frame.setVisible(true);
+      
+      
+
 
       
       //--------------------------------------------------
@@ -144,16 +168,13 @@ public class WebCamSample extends JPanel
 
       g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                          RenderingHints.VALUE_ANTIALIAS_ON
-                         //RenderingHints.KEY_RENDERING,
-                         //RenderingHints.VALUE_RENDER_QUALITY
                          );
-
-
+    
       BufferedImage image = scanner.getImage();
       if (image != null) {
          g.drawImage(image, 0, 0, null);
       }
-
+     
       if (codes != null) {
          for (TopCode top : codes) {
 
@@ -163,7 +184,6 @@ public class WebCamSample extends JPanel
             float orientation = top.getOrientation();
             float x = top.getCenterX();
             float y = top.getCenterY();
-            //float z = top.getHeightZ();
             System.out.println("id: " + id + " orientation: " + orientation + " pos: " + x + ", " + y);
             
          }
