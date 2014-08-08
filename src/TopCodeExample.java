@@ -9,7 +9,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayDeque;
 import java.util.List;
+import java.util.Queue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -23,7 +25,7 @@ import webcam.WebCamException;
 
 
 public class TopCodeExample extends JPanel
-   implements ActionListener, WindowListener {
+   implements ActionListener, WindowListener, Camera{
 
    
    /** The main app window */
@@ -38,6 +40,8 @@ public class TopCodeExample extends JPanel
    /** Animates display */
    protected Timer animator;
    
+   protected Queue<BufferedImage> frames;
+   
 
 
    public TopCodeExample() {
@@ -46,7 +50,7 @@ public class TopCodeExample extends JPanel
       this.webcam   = new WebCam();
       this.scanner  = new Scanner();
       this.animator = new Timer(100, this);  // 10 frames / second
-
+      this.frames = new ArrayDeque();
       
       //--------------------------------------------------
       // Set up the application frame
@@ -64,18 +68,6 @@ public class TopCodeExample extends JPanel
       // Connect to the webcam (this might fail if the
       // camera isn't connected yet).
       //--------------------------------------------------
-      try {
-         this.webcam.initialize();
-
-         //---------------------------------------------
-         // This can be set to other resolutions like
-         // (320x240) or (1600x1200) depending on what
-         // your camera supports
-         //---------------------------------------------
-         this.webcam.openCamera(640, 480);
-      } catch (Exception x) {
-         x.printStackTrace();
-      }
 
       requestFocusInWindow();
       animator.start();
@@ -90,18 +82,11 @@ public class TopCodeExample extends JPanel
       // Capture a frame from the video stream and scan it for
       // TopCodes. 
       //----------------------------------------------------------
-      try {
-         if (webcam.isCameraOpen()) {
-            webcam.captureFrame();
-            codes = scanner.scan(
-               webcam.getFrameData(),
-               webcam.getFrameWidth(),
-               webcam.getFrameHeight());
-         }
-      } catch (WebCamException wcx) {
-         System.err.println(wcx);
-      }
-
+     if (!frames.isEmpty()) {
+        codes = scanner.scan(
+           frames.remove());
+     }
+      
       g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                          RenderingHints.VALUE_ANTIALIAS_ON);
       g.setFont(new Font(null, 0, 12));
@@ -147,8 +132,6 @@ public class TopCodeExample extends JPanel
 /*                        WINDOW EVENTS                           */
 /******************************************************************/
    public void windowClosing(WindowEvent e) {
-      this.webcam.closeCamera();
-      this.webcam.uninitialize();
       frame.setVisible(false);
       frame.dispose();
       System.exit(0);
@@ -187,5 +170,40 @@ public class TopCodeExample extends JPanel
             }
          });
    }
+
+
+@Override
+public void onInitialized(WebCam camera) {
+	// TODO Auto-generated method stub
+	
+}
+
+
+@Override
+public void onOpened(WebCam camera) {
+	// TODO Auto-generated method stub
+	
+}
+
+
+@Override
+public void onFrame(WebCam camera) {
+	// TODO Auto-generated method stub
+	frames.add(camera.getFrameImage());
+}
+
+
+@Override
+public void onClosed(WebCam camera) {
+	// TODO Auto-generated method stub
+	
+}
+
+
+@Override
+public void onUninitialized(WebCam camera) {
+	// TODO Auto-generated method stub
+	
+}
 
 }
