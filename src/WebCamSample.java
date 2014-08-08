@@ -108,12 +108,16 @@ public class WebCamSample extends JPanel implements WindowListener, ActionListen
 
 	/** Calibration Phase */
 	boolean CalibrationPhase = true;
+	
+	public float x0, x1, y0, y1 = 0;
+	
+	MySketch embedded;
 
 	public WebCamSample() {
 		super();
 		setLayout(new BorderLayout());
-		PApplet embedded = new MySketch();
-		add(embedded, BorderLayout.CENTER);
+		embedded = new MySketch();
+		add((PApplet)embedded, BorderLayout.CENTER);
 		//embedded.init();
 		
 		this.frame = new JFrame("TopCodes Webcam Sample");
@@ -168,13 +172,14 @@ public class WebCamSample extends JPanel implements WindowListener, ActionListen
 			// your camera supports
 			// ---------------------------------------------
 			this.webcam.openCamera(640, 480); // Dimension of webcam
+			
 		} catch (Exception x) {
 			x.printStackTrace();
 		}
 
 		requestFocusInWindow();
 		animator.start();
-		embedded.init();
+		((PApplet)embedded).init();
 	}
 
 	/******************************************************************/
@@ -260,13 +265,13 @@ public class WebCamSample extends JPanel implements WindowListener, ActionListen
 					webcam.captureFrame();
 					topCodes = scanner.scan(webcam.getFrameData(),
 							webcam.getFrameWidth(), webcam.getFrameHeight());
-					System.out.println(topCodes);
+					
+					embedded.updateHeatSources(topCodes);
 				}
 			} catch (WebCamException wcx) {
 				System.err.println(wcx);
 			}
 			animator.restart();
 		}
-		
 	}
 }
